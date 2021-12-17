@@ -6,19 +6,29 @@ const StudentList = require("../models/StudentList");
 const resolvers = {
   Query: {
     getCourses: async () => {
-      const courses = await Courses.find().populate([
+      const courses = await Courses.find()
+        .populate([
+          {
+            path: "instructor",
+          },
+          {
+            path: "studentList",
+            populate: "students",
+          },
+        ])
+        .exec();
+      return courses;
+    },
+    getCourse: async (_, { id }) => {
+      const course = await Courses.findById(id).populate([
         {
           path: "instructor",
         },
         {
           path: "studentList",
-          populate:'students'
-        }
+          populate: "students",
+        },
       ]);
-      return courses;
-    },
-    getCourse: async (_, { id }) => {
-      const course = await Courses.findById(id);
       if (!course) throw new Error("Course not found");
       return course;
     },
@@ -41,7 +51,7 @@ const resolvers = {
       return student;
     },
     getStudentlists: async () => {
-      const studentLists = await StudentList.find({});
+      const studentLists = await StudentList.find().populate("students");
       return studentLists;
     },
     getStudentList: async (_, { id }) => {
@@ -64,7 +74,15 @@ const resolvers = {
       const courseExist = await Courses.findOne({ title });
       if (courseExist) throw new Error("Course already exist");
       try {
-        const course = new Courses(input);
+        const course = await new Courses(input).populate([
+          {
+            path: "instructor",
+          },
+          {
+            path: "studentList",
+            populate: "students",
+          },
+        ]);
         await course.save();
         return course;
       } catch (error) {
