@@ -1,0 +1,89 @@
+const { gql } = require("apollo-server");
+
+const typeDefs = gql`
+  type Course {
+    id: ID
+    title: String
+    startDate: String
+    startTime: String
+    courseLength: String
+    instructor: Instructor
+    studentList: StudentList
+  }
+  type Instructor {
+    id: ID
+    name: String
+    lastName: String
+    email: String
+  }
+  type Student {
+    id: ID
+    name: String
+    lastName: String
+    email: String
+  }
+  type StudentList {
+    id: ID
+    listName: String
+    students:[Student]
+  }
+
+  input CourseInput {
+    title: String!
+    startDate: String!
+    startTime: String!
+    courseLength: String!
+    instructor: ID!
+    studentList: ID!
+  }
+  input InstructorInput {
+    name: String!
+    lastName: String!
+    email: String!
+  }
+  input StudentInput {
+    name: String!
+    lastName: String!
+    email: String!
+  }
+  input StudentListInput {
+    listName: String!
+    students: [ID!]!
+  }
+
+  type Query {
+    #Courses
+    getCourses: [Course]
+    getCourse ( id:ID! ): Course
+    #Instructors
+    getInstructors: [Instructor]
+    getInstructor ( id:ID! ): Instructor
+    #Students
+    getStudents: [Student]
+    getStudent ( id:ID! ): Student
+    #Student List
+    getStudentlists: [StudentList]
+    getStudentList ( id:ID! ): StudentList
+    #Get Courses by date
+    getCourseByDate (date:String!): [Course]
+    #Get Course by Instructor
+    getCourseByInstructor (id:ID!) : [Course]
+  }
+  type Mutation {
+    newCourse( input: CourseInput ): Course
+    editCourse( id:ID!, input:CourseInput ): Course
+    deleteCourse ( id:ID! ) : String
+    newInstructor( input: InstructorInput ): Instructor
+    editInstructor( id:ID!, input:InstructorInput ): Instructor
+    deleteInstructor ( id:ID! ) : String
+    newStudent( input: StudentInput ): Student
+    editStudent( id:ID!, input:StudentInput ): Student
+    deleteStudent ( id:ID! ) : String
+    
+    newStudentList( input: StudentListInput ): StudentList
+    editStudentList( id:ID!, input:StudentListInput ): StudentList
+    deleteStudentList ( id:ID! ) : String
+  }
+`;
+
+module.exports = typeDefs;
