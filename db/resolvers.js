@@ -193,7 +193,7 @@ const resolvers = {
         const studentList = await new StudentList(input).populate({
           path: "students",
         });
-        console.log(studentList,'///////');
+        console.log(studentList, "///////");
         await studentList.save();
         return studentList;
       } catch (error) {
@@ -205,7 +205,7 @@ const resolvers = {
       if (!studentList) throw new Error("Student List not found");
       studentList = await StudentList.findByIdAndUpdate(id, input, {
         new: true,
-      });
+      }).populate("students");
       return studentList;
     },
     deleteStudentList: async (_, { id }) => {
