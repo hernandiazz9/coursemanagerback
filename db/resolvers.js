@@ -60,11 +60,30 @@ const resolvers = {
       return studentList;
     },
     getCourseByDate: async (_, { date }) => {
-      const coursesByDate = await Courses.find({ startDate: date });
+      const coursesByDate = await Courses.find({ startDate: date }).populate([
+        {
+          path: "instructor",
+        },
+        {
+          path: "studentList",
+          populate: "students",
+        },
+      ]);
       return coursesByDate;
     },
     getCourseByInstructor: async (_, { id }) => {
-      const coursesByInstructor = await Courses.find({ instructor: id });
+      const coursesByInstructor = await Courses.find({
+        instructor: id,
+      }).populate([
+        {
+          path: "instructor",
+        },
+        {
+          path: "studentList",
+          populate: "students",
+        },
+      ]);
+      if (!coursesByInstructor) throw new Error("Not found");
       return coursesByInstructor;
     },
   },
@@ -94,7 +113,15 @@ const resolvers = {
       if (!course) throw new Error("Course not found");
       course = await Courses.findByIdAndUpdate(id, input, {
         new: true,
-      });
+      }).populate([
+        {
+          path: "instructor",
+        },
+        {
+          path: "studentList",
+          populate: "students",
+        },
+      ]);
       return course;
     },
     deleteCourse: async (_, { id }) => {
@@ -109,7 +136,7 @@ const resolvers = {
       if (instructorExist) throw new Error("Instructor already exist");
 
       try {
-        const instructor = new Instructors(input);
+        const instructor = new Instructor(input);
         await instructor.save();
         return instructor;
       } catch (error) {
@@ -119,7 +146,7 @@ const resolvers = {
     editInstructor: async (_, { id, input }) => {
       let instructor = await Instructor.findById(id);
       if (!instructor) throw new Error("Instructor not found");
-      instructor = await Instructors.findByIdAndUpdate(id, input, {
+      instructor = await Instructor.findByIdAndUpdate(id, input, {
         new: true,
       });
       return instructor;
@@ -127,7 +154,7 @@ const resolvers = {
     deleteInstructor: async (_, { id }) => {
       const instructor = await Instructor.findById(id);
       if (!instructor) throw new Error("Instructor not found");
-      await Instructors.findByIdAndDelete(id);
+      await Instructor.findByIdAndDelete(id);
       return "Instructor deleted";
     },
     newStudent: async (_, { input }) => {
@@ -163,7 +190,10 @@ const resolvers = {
       if (studentListExist) throw new Error("Student List already exist");
 
       try {
-        const studentList = new StudentList(input);
+        const studentList = await new StudentList(input).populate({
+          path: "students",
+        });
+        console.log(studentList,'///////');
         await studentList.save();
         return studentList;
       } catch (error) {
@@ -171,7 +201,7 @@ const resolvers = {
       }
     },
     editStudentList: async (_, { id, input }) => {
-      let studentList = await StudentList.findById(id);
+      let studentList = await StudentList.findById(id).populate("students");
       if (!studentList) throw new Error("Student List not found");
       studentList = await StudentList.findByIdAndUpdate(id, input, {
         new: true,
@@ -179,7 +209,7 @@ const resolvers = {
       return studentList;
     },
     deleteStudentList: async (_, { id }) => {
-      const studentList = await StudentList.findById(id);
+      const studentList = await StudentList.findById(id).populate("students");
       if (!studentList) throw new Error("Student List not found");
       await StudentList.findByIdAndDelete(id);
       return "Student List deleted";
