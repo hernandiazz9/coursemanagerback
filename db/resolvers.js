@@ -2,6 +2,8 @@ const Courses = require("../models/Courses");
 const Instructor = require("../models/Instructor");
 const Students = require("../models/Students");
 const StudentList = require("../models/StudentList");
+const { verifyDisponibilityOfInstructor } = require("../helper/helper");
+const { coursesByDate } = require("../helper/helper");
 
 const resolvers = {
   Query: {
@@ -60,7 +62,7 @@ const resolvers = {
       return studentList;
     },
     getCourseByDate: async (_, { date }) => {
-      const coursesByDate = await Courses.find({ startDate: date }).populate([
+      const allCourses = await Courses.find().populate([
         {
           path: "instructor",
         },
@@ -69,7 +71,7 @@ const resolvers = {
           populate: "students",
         },
       ]);
-      return coursesByDate;
+      return coursesByDate(allCourses, date);
     },
     getCourseByInstructor: async (_, { id }) => {
       const coursesByInstructor = await Courses.find({
@@ -89,9 +91,20 @@ const resolvers = {
   },
   Mutation: {
     newCourse: async (_, { input }) => {
-      const { title } = input;
+      const { title, startDate, instructor } = input;
       const courseExist = await Courses.findOne({ title });
+      const courses = await Courses.find();
+
+      if (
+        verifyDisponibilityOfInstructor(courses, startDate, instructor).find(
+          (t) => t === true
+        )
+      )
+        throw new Error(
+          "Instructor is already in other curse in the same time"
+        );
       if (courseExist) throw new Error("Course already exist");
+
       try {
         const course = await new Courses(input).populate([
           {
@@ -195,7 +208,6 @@ const resolvers = {
         const studentList = await new StudentList(input).populate({
           path: "students",
         });
-        console.log(studentList, "///////");
         await studentList.save();
         return studentList;
       } catch (error) {
