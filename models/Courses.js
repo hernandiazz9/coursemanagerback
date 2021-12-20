@@ -10,10 +10,10 @@ const CoursesSchema = mongoose.Schema({
     type: Date,
     require: true,
   },
-  startTime: {
-    type: String,
-    require: true,
-  },
+  // startTime: {
+  //   type: String,
+  //   require: true,
+  // },
   courseLength: {
     type: String,
     require: true,

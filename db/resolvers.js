@@ -181,7 +181,9 @@ const resolvers = {
     deleteStudent: async (_, { id }) => {
       const student = await Students.findById(id);
       if (!student) throw new Error("Student not found");
+      // const studentInList = await StudentList.find();
       await Students.findByIdAndDelete(id);
+
       return "Student deleted";
     },
     newStudentList: async (_, { input }) => {
@@ -201,11 +203,12 @@ const resolvers = {
       }
     },
     editStudentList: async (_, { id, input }) => {
-      let studentList = await StudentList.findById(id).populate("students");
+      let studentList = await StudentList.findById(id);
       if (!studentList) throw new Error("Student List not found");
       studentList = await StudentList.findByIdAndUpdate(id, input, {
         new: true,
       }).populate("students");
+      console.log(studentList, "desdedasd");
       return studentList;
     },
     deleteStudentList: async (_, { id }) => {
