@@ -1,21 +1,21 @@
 {
-  "name": "server-courses",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "start": "node .",
-    "dev": "nodemon ."
-  },
-  "author": "HDev",
-  "license": "ISC",
-  "dependencies": {
-    "apollo-server": "^3.5.0",
-    "date-fns": "^2.27.0",
-    "dotenv": "^10.0.0",
-    "mongoose": "^6.1.1"
-  },
-  "devDependencies": {
-    "nodemon": "^2.0.15"
-  }
+   "name": "server-courses",
+   "version": "1.0.0",
+   "description": "",
+   "main": "index.js",
+   "scripts": {
+      "start": "node .",
+      "dev": "nodemon ."
+   },
+   "author": "HDev",
+   "license": "ISC",
+   "dependencies": {
+      "apollo-server": "^3.5.0",
+      "date-fns": "^2.27.0",
+      "dotenv": "^10.0.0",
+      "mongoose": "^6.1.1"
+   },
+   "devDependencies": {
+      "nodemon": "^2.0.15"
+   }
 }
